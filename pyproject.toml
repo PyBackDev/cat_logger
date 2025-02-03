@@ -1,0 +1,65 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "simple_logs"
+dynamic = ["version"]
+description = 'Python library to simplify working with the standard logging library'
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+keywords = []
+authors = [
+    { name = "PyBackDev", email = "evbalbukova@gmail.com" },
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = []
+
+[project.urls]
+Documentation = "https://github.com/bev/simple-logs#readme"
+Issues = "https://github.com/bev/simple-logs/issues"
+Source = "https://github.com/bev/simple-logs"
+
+[tool.hatch.version]
+path = "simple_logs/__about__.py"
+
+[tool.hatch.ruff]
+line-length = 79
+profile = "black"
+
+[tool.hatch.isort]
+profile = "black"
+multi_line_output = 3
+skip = [".gitignore"]
+line_length = 79
+
+[tool.hatch.black]
+line-length = 79
+
+[tool.hatch.envs.style]
+detached = true
+dependencies = [
+    "isort",
+    "mypy",
+    "ruff",
+    "black",
+]
+[tool.hatch.envs.style.scripts]
+check = [
+    "python -m black .",
+    "python -m isort .",
+    "python -m mypy .",
+    "python -m ruff check --fix .",
+]
+

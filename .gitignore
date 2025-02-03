@@ -1,0 +1,10 @@
+# Python version
+.python-version
+
+# Byte-compiled / optimized / DLL files
+.vscode/
+__pycache__/
+.idea/
+
+# Environments
+.venv
