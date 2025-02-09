@@ -1,0 +1,29 @@
+name: Make test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+      - name: Install Hatch
+        run: |
+          pip install hatch
+      - name: Run check style code
+        run: |
+          hatch run style:check
+      - name: Run check test
+        run: |
+          hatch test
