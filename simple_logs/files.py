@@ -19,6 +19,7 @@ class Directory:
         join_directories(directory: str) -> str:
             Joins the base directory with another directory path.
     """
+
     directory: str
 
     def directory_exist(self) -> None:
@@ -31,7 +32,7 @@ class Directory:
         """
         try:
             Path(self.directory).mkdir(parents=True, exist_ok=True)
-        except (PermissionError, TypeError):
+        except OSError:
             pass
 
     def join_directories(self, directory: str) -> str:
@@ -75,15 +76,15 @@ class File(Directory):
         """
         try:
             os.remove(os.path.join(self.directory, file))
-        except FileNotFoundError:
+        except OSError:
             pass
 
-    def get_file_names(self) -> list[str] | None:
+    def get_file_names(self) -> list[str]:  # type: ignore[return]
         """
         Retrieves a list of file names in the directory.
 
         Returns:
-            list[str] | None: A list of file names if the directory exists,
+            list[str]: A list of file names if the directory exists,
             otherwise None.
 
         Raises:
@@ -91,7 +92,7 @@ class File(Directory):
         """
         try:
             return os.listdir(self.directory)
-        except FileNotFoundError:
+        except OSError:
             pass
 
     @classmethod
@@ -111,7 +112,7 @@ class File(Directory):
 @dataclass(repr=False, eq=False, frozen=True, slots=True, match_args=False)
 class LoggingFile(File):
     """
-    Represents a logging file system that handles rotation based on a 
+    Represents a logging file system that handles rotation based on a
     specified suffix and backup count.
 
     Attributes:
@@ -125,16 +126,17 @@ class LoggingFile(File):
         file_to_delete() -> None:
             Identifies files exceeding the backup count and deletes them.
     """
+
     suffix: str
     backup_count: int
 
     def filename_datetime(self, file_names: List[str]) -> List[str]:
         """
         Extracts and sorts file names based on datetime suffix in the given file names list.
-    
+
         Args:
             file_names (List[str]): A list of file names to process.
-    
+
         Returns:
             List[str]: A list of file names sorted based on their datetime suffix, formatted in the same style.
         """
@@ -151,11 +153,11 @@ class LoggingFile(File):
     def file_to_delete(self) -> None:
         """
         Identifies files exceeding the backup count and deletes them.
-        
-        This method retrieves file names from the current directory, sorts them based 
-        on their datetime suffix, and deletes the excess files while maintaining the 
+
+        This method retrieves file names from the current directory, sorts them based
+        on their datetime suffix, and deletes the excess files while maintaining the
         maximum number of backup files specified by `backup_count`.
-        
+
         Returns:
             None
         """

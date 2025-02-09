@@ -27,9 +27,8 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Documentation = "https://github.com/bev/simple-logs#readme"
-Issues = "https://github.com/bev/simple-logs/issues"
-Source = "https://github.com/bev/simple-logs"
+Documentation = "https://github.com/PyBackDev/simple_logs/blob/main/README.md"
+Source = "https://github.com/PyBackDev/simple_logs"
 
 [tool.hatch.version]
 path = "simple_logs/__about__.py"
