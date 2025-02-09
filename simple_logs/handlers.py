@@ -7,30 +7,20 @@ from simple_logs.files import LoggingFile
 
 class TimedRotatingFileHandler(logging.FileHandler):
     """
-    A handler for logging to files, rotating them at regular time intervals.
+    Handler for log files that rotates them based on time or date, facilitating log management.
 
-    This handler manages log files in a specified directory by creating a new file for each time period
-    (determined by `suffix`) and managing backup files up to a specified limit (`backup_count`). When the
-    current log file reaches its expiration, the handler deletes old files and begins logging to a new one.
+    This class is designed to manage log files efficiently by creating a new log file
+    at regular time intervals, ensuring old logs are appropriately backed up or removed.
+    The rotation is determined using a timestamp suffix format. It supports customization
+    of backup count, file encoding, file mode, and error handling. Ensures the directory
+    for the log files exists and properly manages the rolling over of files when necessary.
 
-    Args:
-        directory (str): The directory where log files will be created.
-        suffix (str): The suffix format for log file names using datetime formatting (e.g., "%Y-%m-%d").
-                      Defaults to "%Y-%m-%d".
-        backup_count (int): The maximum number of old log files to keep. Defaults to 14.
-        mode (str): The file mode to use when opening the log file (e.g., "a" for append). Defaults to "a".
-        encoding (str | None): The encoding to use for the log files. Defaults to None.
-        delay (bool): Whether to delay the creation of the file until the first log record is emitted.
-                      Defaults to False.
-        errors (str | None): Determines how encoding errors are handled. Defaults to None.
-
-    Methods:
-        init_file(): Ensures the log directory exists and returns the current log file name.
-        get_filename(): Constructs the log file name based on the current date and suffix.
-        rename_file(filename): Updates the internal reference to the current log file.
-        do_rollover(filename): Closes the current log file, deletes old files if necessary, and
-                               starts a new log file.
-        emit(record): Logs a record to the file, rolling over if the current log file needs to be replaced.
+    Attributes:
+        _directory (str): Directory path where log files are stored.
+        _suffix (str): Time or date format used as a suffix in filenames.
+        _backup_count (int): Maximum number of old log files to keep.
+        _handler (LoggingFile): Internal handler for file operations.
+        _filename (str): Name of the currently active log file.
     """
 
     def __init__(
@@ -88,7 +78,6 @@ class TimedRotatingFileHandler(logging.FileHandler):
         Args:
             filename (str): The new log file name to set.
         """
-        """"""
         filename = os.fspath(filename)
         self.baseFilename = os.path.abspath(filename)
 
