@@ -4,7 +4,7 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/simple_logs.svg)](https://pypi.org/project/simple_logs)
 
 -----
-Python library to simplify working with the standard logging library
+Python library to simplify working with the standard logging library.
 
 The key features are:
 
