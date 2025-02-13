@@ -19,7 +19,7 @@ def config_logger(name_logger: str = "dog", directory: str = LOG_DIR):
     logger = logging.getLogger(name_logger)
 
 
-def dog(name_logger: str = "cat", directory: str = LOG_DIR):
+def dog(name_logger: str = "dog", directory: str = LOG_DIR):
     config_logger(name_logger=name_logger, directory=directory)
     logger.info("I like dogs better, but don't tell that to my cat Mia.")  # type: ignore[union-attr]
     logger.info("I don't have a dog!")  # type: ignore[union-attr]
