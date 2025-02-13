@@ -1,26 +1,37 @@
+import fcntl
 import logging
 import os
 from datetime import datetime
+from logging import LogRecord
 
+from simple_logs.enums import LoggingLevel
 from simple_logs.files import LoggingFile
 
 
 class TimedRotatingFileHandler(logging.FileHandler):
     """
-    Handler for log files that rotates them based on time or date, facilitating log management.
+    A logging handler for managing log files that rotate based on date.
 
-    This class is designed to manage log files efficiently by creating a new log file
-    at regular time intervals, ensuring old logs are appropriately backed up or removed.
-    The rotation is determined using a timestamp suffix format. It supports customization
-    of backup count, file encoding, file mode, and error handling. Ensures the directory
-    for the log files exists and properly manages the rolling over of files when necessary.
+    This handler writes log records to a file, rotating the log file
+    based on the specified date suffix. It ensures proper file locking
+    during writes, supports log file rollovers, and removes old log
+    files based on the backup count.
 
     Attributes:
-        _directory (str): Directory path where log files are stored.
-        _suffix (str): Time or date format used as a suffix in filenames.
-        _backup_count (int): Maximum number of old log files to keep.
-        _handler (LoggingFile): Internal handler for file operations.
-        _filename (str): Name of the currently active log file.
+        _directory (str): The directory where log files will be created.
+        _suffix (str): The date format suffix for log file rotation.
+        _backup_count (int): The number of backup log files to retain.
+        _handler (LoggingFile): A helper for handling file operations.
+        _filename (str): The current log file's name.
+        _level (int): The log level threshold for this logger.
+
+    Methods:
+        init_file(): Ensures log directory existence and initializes the log file.
+        get_filename(): Constructs the log file name based on date and suffix.
+        do_rollover(filename): Rolls over to a new log file.
+        get_level_logging(level): Maps log level names to numeric log levels.
+        write_record_to_file(record): Writes a formatted log record to the log file.
+        emit(record): Writes a log record with log rotation if necessary.
     """
 
     def __init__(
@@ -32,16 +43,18 @@ class TimedRotatingFileHandler(logging.FileHandler):
         encoding: str | None = None,
         delay: bool = False,
         errors: str | None = None,
+        level: str = "INFO",
     ):
-        self._directory = directory
-        self._suffix = suffix
-        self._backup_count = backup_count
-        self._handler = LoggingFile(
+        self._directory: str = directory
+        self._suffix: str = suffix
+        self._backup_count: int = backup_count
+        self._handler: LoggingFile = LoggingFile(
             self._directory,
             self._suffix,
             self._backup_count,
         )
-        self._filename = self.init_file()
+        self._filename: str = self.init_file()
+        self._level: int = self.get_level_logging(level)
         super().__init__(self._filename, mode, encoding, delay, errors)
 
     def init_file(self) -> str:
@@ -71,44 +84,73 @@ class TimedRotatingFileHandler(logging.FileHandler):
         filename = str(self._directory) + "/" + str(current_date)
         return filename
 
-    def rename_file(self, filename: str):
-        """
-        Updates the internal reference to the current log file.
-
-        Args:
-            filename (str): The new log file name to set.
-        """
-        filename = os.fspath(filename)
-        self.baseFilename = os.path.abspath(filename)
-
     def do_rollover(self, filename: str):
         """
-        Rolls over to a new log file by closing the current file, setting up the new file,
-        and optionally managing file stream creation.
+        Handles log file rollover to a new file.
+
+        This method closes the current log file, updates the handler
+        to use a new file specified by `filename`, and ensures that
+        the new file is open for writing.
 
         Args:
-            filename (str): The name of the new log file to roll over to.
+            filename (str): The path to the new log file.
         """
-        if self.stream:
-            self.stream.close()
-            self.stream = None  # type: ignore[assignment]
-        self.rename_file(filename)
-        if not self.delay:
-            self.stream = self._open()
+        self.close()
+        filename = os.fspath(filename)
+        self.baseFilename = os.path.abspath(filename)
+        self.stream = self._open()
 
-    def emit(self, record):
+    def get_level_logging(self, level: str) -> int:
         """
-        Logs a record to the current log file, performing a log file rollover if necessary.
+        Converts a log level from its string representation to its numeric value.
 
         Args:
-            record: The log record to be logged.
+            level (str): The name of the log level (e.g., 'INFO', 'DEBUG').
+
+        Returns:
+            int: The numeric value associated with the specified log level. Defaults to logging.INFO if the level name is not found.
+        """
+        if level in LoggingLevel.__members__.keys():
+            return LoggingLevel[level].value
+        return logging.INFO
+
+    def write_record_to_file(self, record: LogRecord):
+        """
+        Writes a formatted log record to the current log file, ensuring proper file locking.
+
+        Args:
+            record (LogRecord): The log record to be written to the file.
+        """
+        msg = self.format(record)
+        stream = self.stream
+        try:
+            fcntl.flock(stream, fcntl.LOCK_EX)
+            stream.write(msg + self.terminator)
+        finally:
+            fcntl.flock(stream, fcntl.LOCK_UN)
+        self.flush()
+
+    def emit(self, record: LogRecord):
+        """
+        Emit a log record and handle log file rotation if necessary.
+
+        This method writes a log record to a file, checking if a log
+        file rotation is required. If the current log file's name
+        differs from the expected filename (based on the date suffix),
+        it performs a rollover. The log record is only written
+        if its log level meets or exceeds the handler's threshold.
+
+        Args:
+            record (LogRecord): The log record to be emitted.
         """
         try:
-            filename = self.get_filename()
-            if not self._handler.file_exist(filename):
-                self._handler.file_to_delete()
-                self.do_rollover(filename)
-            super().emit(record)
+            if record.levelno >= self._level:
+                filename = self.get_filename()
+                if not self._handler.file_exist(filename):
+                    self._handler.file_to_delete()
+                if self._filename != filename:
+                    self._filename = filename
+                    self.do_rollover(filename)
+                self.write_record_to_file(record)
         except Exception:
             self.handleError(record)
-            super().emit(record)

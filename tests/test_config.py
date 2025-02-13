@@ -248,9 +248,10 @@ class TestConfigLogging(unittest.TestCase):
         self.config_logging.add_default_logger("default")
         self.assertIn("default", self.config_logging["loggers"])
         default_logger = self.config_logging["loggers"]["default"]
-        self.assertEqual(default_logger[0]["handlers"], ("file", "console"))
-        self.assertEqual(default_logger[0]["level"], "INFO")
-        self.assertEqual(default_logger[0]["propagate"], False)
+        print(default_logger)
+        self.assertEqual(default_logger["handlers"], ("file", "console"))
+        self.assertEqual(default_logger["level"], "INFO")
+        self.assertEqual(default_logger["propagate"], False)
 
     def test_len(self) -> None:
         """

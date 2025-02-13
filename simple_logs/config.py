@@ -4,19 +4,31 @@ from typing import Any
 
 class ConfigLogging(MutableMapping):
     """
-    Manages and modifies logging configurations for a Python application.
+    A configuration manager class for logging settings, implementing a mutable mapping.
 
-    The ConfigLogging class is a mutable mapping designed to handle and update
-    logging configurations. This includes defining and managing formatters, handlers,
-    and loggers. Users can utilize this class to create custom logging setups or apply
-    default configurations with minimal effort. It follows the Python logging's
-    configuration dictionary structure, making it compatible with standard logging
-    practices.
+    This class allows you to manage logging formatters, handlers, and loggers dynamically
+    through a dictionary-like interface. It defines default logging configurations and
+    provides methods for adding and customizing various logging components.
 
     Attributes:
-        default_config (dict): A dictionary containing the default logging configuration
-            settings. These include version, disable_existing_loggers, formatters, handlers,
-            and loggers, with empty defaults for most fields.
+        default_config (dict): The default logging configuration containing the version,
+            disable flag for existing loggers, and placeholders for formatters, handlers,
+            and loggers.
+
+    Methods:
+        __getitem__(key): Retrieve the value associated with a given key in the configuration.
+        __setitem__(key, value): Set the value for a specific key in the configuration.
+        __delitem__(key): Remove the key-value pair from the configuration.
+        __iter__(): Return an iterator over the configuration keys.
+        __len__(): Return the number of key-value pairs in the configuration.
+        add_formatter(name, formatter): Add a logging formatter to the configuration.
+        add_default_formatter(): Add a predefined logging formatter to the configuration.
+        add_default_django_formatter(): Add a Django-specific logging formatter.
+        add_handler(name, handler): Add a logging handler to the configuration.
+        add_console_handler(level, class_handler, formatter, stream): Add a console logging handler.
+        add_file_handler(directory, level, class_handler, formatter): Add a file logging handler.
+        add_logger(name, logger): Add a logger to the configuration.
+        add_default_logger(name, handlers, level, propagate): Add a predefined logger with default handlers.
     """
 
     default_config = {
@@ -205,10 +217,8 @@ class ConfigLogging(MutableMapping):
             level (str, optional): Logging level. Defaults to "INFO".
             propagate (bool, optional): Specify whether to propagate log entries. Defaults to False.
         """
-        self["loggers"][name] = (
-            {
-                "handlers": handlers,
-                "level": level,
-                "propagate": propagate,
-            },
-        )
+        self["loggers"][name] = {
+            "handlers": handlers,
+            "level": level,
+            "propagate": propagate,
+        }

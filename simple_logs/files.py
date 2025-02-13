@@ -112,19 +112,21 @@ class File(Directory):
 @dataclass(repr=False, eq=False, frozen=True, slots=True, match_args=False)
 class LoggingFile(File):
     """
-    Represents a logging file system that handles rotation based on a
-    specified suffix and backup count.
+    A class for handling logging operations with files in a specific directory.
+
+    This class extends the `File` class and provides additional functionality
+    to manage files with naming based on datetime suffixes and to enforce
+    a limit on the number of backup files.
 
     Attributes:
-        suffix (str): The datetime format string for file suffix.
+        suffix (str): The datetime format suffix used in file names.
         backup_count (int): The maximum number of backup files to retain.
 
     Methods:
         filename_datetime(file_names: List[str]) -> List[str]:
-            Extracts and sorts file names based on datetime suffix.
-
+            Extracts datetime-suffixed file names and sorts them in chronological order.
         file_to_delete() -> None:
-            Identifies files exceeding the backup count and deletes them.
+            Deletes files exceeding the backup count.
     """
 
     suffix: str
@@ -132,13 +134,18 @@ class LoggingFile(File):
 
     def filename_datetime(self, file_names: List[str]) -> List[str]:
         """
-        Extracts and sorts file names based on datetime suffix in the given file names list.
+        Extracts and sorts file names based on their datetime suffix.
 
         Args:
             file_names (List[str]): A list of file names to process.
 
         Returns:
-            List[str]: A list of file names sorted based on their datetime suffix, formatted in the same style.
+            List[str]: A list of file names with valid datetime suffixes,
+            sorted in chronological order.
+
+        Raises:
+            ValueError: If a file name does not match the datetime suffix format,
+            the file is deleted.
         """
         dates: List[datetime] = []
         for file in file_names:
@@ -146,17 +153,17 @@ class LoggingFile(File):
                 date = datetime.strptime(file, self.suffix)
                 dates.append(date)
             except ValueError:
-                pass
+                self.delete_file(file)
         dates.sort()
         return [datetime.strftime(value, self.suffix) for value in dates]
 
     def file_to_delete(self) -> None:
         """
-        Identifies files exceeding the backup count and deletes them.
+        Deletes files exceeding the specified backup count.
 
-        This method retrieves file names from the current directory, sorts them based
-        on their datetime suffix, and deletes the excess files while maintaining the
-        maximum number of backup files specified by `backup_count`.
+        This method retrieves file names from the directory, sorts them
+        by their datetime suffix, and deletes the oldest files if the
+        number of files exceeds the `backup_count` attribute.
 
         Returns:
             None

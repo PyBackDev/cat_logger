@@ -71,26 +71,6 @@ class TestTimedRotatingFileHandler(unittest.TestCase):
         expected_filename = f"{self.directory}/2023-01-01"
         self.assertEqual(self.handler.get_filename(), expected_filename)
 
-    def test_rename_file(self):
-        """
-        Tests the `rename_file` method for updating the file name.
-
-        This test ensures that invoking the `rename_file` method updates the
-        `baseFilename` attribute of the handler to the new file name provided.
-        It validates that the handler correctly reflects the updated file name
-        after renaming.
-
-        Args:
-            self: The instance of the testing class.
-
-        Raises:
-            AssertionError: If the `baseFilename` attribute does not match the
-                expected `new_filename` after the call to `rename_file`.
-        """
-        new_filename = "/logs/2023-02-02"
-        self.handler.rename_file(new_filename)
-        self.assertEqual(self.handler.baseFilename, new_filename)
-
     def test_do_rollover(self):
         """
         Executes and verifies the log file rollover operation for the handler instance.
@@ -108,7 +88,6 @@ class TestTimedRotatingFileHandler(unittest.TestCase):
         """
         new_filename = f"{self.directory}/{self.current_date}"
         self.handler.do_rollover(new_filename)
-        print(self.handler.baseFilename)
         self.assertEqual(self.handler.baseFilename, self.path_to_file)
 
     @patch("simple_logs.handlers.TimedRotatingFileHandler.get_filename")
@@ -133,7 +112,7 @@ class TestTimedRotatingFileHandler(unittest.TestCase):
             LoggingFile, "file_to_delete"
         ) as mock_file_to_delete:
             self.handler.emit(record)
-            mock_file_to_delete.assert_called_once()
+            mock_file_to_delete.assert_not_called()
             self.assertEqual(self.handler.baseFilename, self.path_to_file)
 
     @patch("simple_logs.handlers.TimedRotatingFileHandler.get_filename")
