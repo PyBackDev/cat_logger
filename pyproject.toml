@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "cat_logger"
+name = "meowlogs"
 dynamic = ["version"]
 description = 'Python library to simplify working with the standard logging library'
 readme = "README.md"
@@ -27,11 +27,11 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Documentation = "https://github.com/PyBackDev/cat_logger/blob/main/README.md"
-Source = "https://github.com/PyBackDev/cat_logger"
+Documentation = "https://github.com/PyBackDev/meowlogs/blob/main/README.md"
+Source = "https://github.com/PyBackDev/meowlogs"
 
 [tool.hatch.version]
-path = "cat_logger/__about__.py"
+path = "meowlogs/__about__.py"
 
 [tool.hatch.ruff]
 line-length = 79

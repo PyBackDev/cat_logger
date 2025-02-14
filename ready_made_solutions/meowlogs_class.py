@@ -1,7 +1,7 @@
 import logging.config
 import os
 
-from cat_logger.config import ConfigLogging
+from meowlogs.config import ConfigLogging
 
 LOG_DIR = os.path.join(os.path.dirname(__file__), "cat")
 

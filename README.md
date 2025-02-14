@@ -1,7 +1,7 @@
-# cat_logger
+# meowlogs
 
-[![PyPI - Version](https://img.shields.io/pypi/v/cat_logger.svg)](https://pypi.org/project/cat_logger)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/cat_logger.svg)](https://pypi.org/project/cat_logger)
+[![PyPI - Version](https://img.shields.io/pypi/v/meowlogs.svg)](https://pypi.org/project/meowlogs)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/meowlogs.svg)](https://pypi.org/project/meowlogs)
 
 -----
 Python library to simplify working with the standard logging library.
@@ -23,15 +23,15 @@ The key features are:
 ## Installation
 
 ```console
-pip install cat_logger
+pip install meowlogs
 ```
 
 ## Example of use
 
-### [Using a library with a class](https://github.com/PyBackDev/cat_logger/blob/main/ready_made_solutions/cat_logger_class.py)
+### [Using a library with a class](https://github.com/PyBackDev/meowlogs/blob/main/ready_made_solutions/meowlogs_class.py)
 
-### [Using a library with a function](https://github.com/PyBackDev/cat_logger/blob/main/ready_made_solutions/cat_logger_func.py)
+### [Using a library with a function](https://github.com/PyBackDev/meowlogs/blob/main/ready_made_solutions/meowlogs_func.py)
 
 ## License
 
-`cat_logger` is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.
+`meowlogs` is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.

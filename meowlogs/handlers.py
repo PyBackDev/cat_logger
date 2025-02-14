@@ -3,8 +3,8 @@ import logging
 import os
 from datetime import datetime
 
-from cat_logger.enums import LoggingLevel
-from cat_logger.files import LoggingFile
+from meowlogs.enums import LoggingLevel
+from meowlogs.files import LoggingFile
 
 
 class TimedRotatingFileHandler(logging.FileHandler):
