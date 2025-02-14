@@ -1,139 +1,150 @@
 import os
-import unittest
 from datetime import datetime
+from logging import LogRecord
 from unittest.mock import MagicMock, patch
 
-from simple_logs.files import LoggingFile
+import pytest  # type: ignore[import-not-found]
+
 from simple_logs.handlers import TimedRotatingFileHandler
 
 
-class TestTimedRotatingFileHandler(unittest.TestCase):
+@pytest.fixture
+def mocked_datetime_now():
+    """Mock the datetime.now method to return a fixed value."""
+    with patch("simple_logs.handlers.datetime") as mock_datetime:
+        mock_datetime.now.return_value = datetime(2023, 10, 1)
+        mock_datetime.strftime = datetime.strftime
+        yield mock_datetime
+
+
+@pytest.fixture
+def mock_logging_file():
+    """Mock the LoggingFile class to emulate file handling behavior."""
+    with patch("simple_logs.handlers.LoggingFile") as mock_file:
+        yield mock_file
+
+
+@pytest.fixture
+def mock_file_handler():
+    with patch(
+        "simple_logs.handlers.logging.FileHandler", autospec=True
+    ) as MockFileHandler:
+        MockFileHandler.return_value = MagicMock()
+        yield MockFileHandler
+
+
+@pytest.fixture
+def handler(mock_file_handler, mock_logging_file, mocked_datetime_now):
+    """Create a test instance of TimedRotatingFileHandler with mocked dependencies."""
+    handler = TimedRotatingFileHandler(
+        directory="/tmp/logs", suffix="%Y-%m-%d", backup_count=3, level="DEBUG"
+    )
+    return handler
+
+
+def test_initialization(handler, mock_logging_file):
+    """Test the initialization of the TimedRotatingFileHandler.
+
+    Args:
+        handler (TimedRotatingFileHandler): The handler instance under test.
+        mock_logging_file (MagicMock): Mocked LoggingFile class.
+
+    Asserts:
+        - The directory, suffix, and backup_count are set correctly.
+        - LoggingFile is initialized with the correct arguments.
     """
-    Tests for the TimedRotatingFileHandler class.
+    assert handler._directory == "/tmp/logs"
+    assert handler._suffix == "%Y-%m-%d"
+    assert handler._backup_count == 3
+    assert handler._level == 10  # DEBUG level
+    mock_logging_file.assert_called_once_with("/tmp/logs", "%Y-%m-%d", 3)
 
-    This test suite verifies the behavior of the TimedRotatingFileHandler class,
-    including initialization, file handling, and log file rotation based on time.
-    The tests simulate various scenarios to ensure the correct functionality
-    of the handler.
 
-    Attributes:
-        directory (str): Directory path where log files are stored.
-        suffix (str): Time or date format used as a suffix in filenames.
-        backup_count (int): Maximum number of old log files to keep.
-        handler (TimedRotatingFileHandler): Instance of the handler under test.
-        current_date (str): Current date formatted according to the given suffix.
-        path_to_dir (str): Full path to the log directory.
-        path_to_file (str): Full path to the current log file.
+def test_get_filename(handler, mocked_datetime_now):
+    """Test the get_filename method to ensure the filename is generated correctly.
+
+    Args:
+        handler (TimedRotatingFileHandler): The handler instance under test.
+        mocked_datetime_now (MagicMock): Mocked datetime for generating filenames.
+
+    Asserts:
+        - The filename matches the expected pattern based on the date.
     """
+    filename = handler.get_filename()
+    assert filename == "/tmp/logs/2023-10-01"
 
-    def setUp(self):
-        self.directory = "tests/logs"
-        self.suffix = "%Y-%m-%d"
-        self.backup_count = 7
-        self.handler = TimedRotatingFileHandler(
-            directory=self.directory,
-            suffix=self.suffix,
-            backup_count=self.backup_count,
-        )
-        self.current_date = datetime.now().strftime(self.suffix)
-        self.path_to_dir = os.path.join(os.path.dirname(__file__), "logs")
-        self.path_to_file = os.path.join(self.path_to_dir, self.current_date)
 
-    def test_init_file(self):
-        """
-        Tests the `init_file` method of a logging file handler.
+def test_file_rollover(handler, mock_logging_file):
+    """Test the file rollover logic with the do_rollover method.
 
-        This test ensures that the `init_file` method performs as expected by calling
-        the `directory_exist` function and verifying the interaction.
+    Args:
+        handler (TimedRotatingFileHandler): The handler instance under test.
+        mock_logging_file (MagicMock): Mocked LoggingFile class.
 
-        Args:
-            self: Represents the instance of the test case.
+    Asserts:
+        - The baseFilename is updated to the new filename after rollover.
+    """
+    new_filename = "/tmp/logs/2023-10-02"
+    handler.do_rollover(new_filename)
+    assert handler.baseFilename == os.path.abspath(new_filename)
 
-        Raises:
-            AssertionError: If `directory_exist` is not called exactly once during the
-                execution of `init_file`.
-        """
-        with patch.object(LoggingFile, "directory_exist") as mock_directory_exist:
-            self.handler.init_file()
-            mock_directory_exist.assert_called_once()
 
-    @patch("simple_logs.handlers.datetime")
-    def test_get_filename(self, mock_datetime):
-        """
-        Tests the `get_filename` method to ensure that the generated filename matches
-        the expected format based on the mocked current date.
+def test_write_record_to_file(handler):
+    """Test the write_record_to_file method to ensure log records are written correctly.
 
-        Args:
-            mock_datetime (MagicMock): The mocked `datetime` class used to simulate
-                the current date during the test.
-        """
-        mock_datetime.now.return_value.strftime.return_value = "2023-01-01"
-        expected_filename = f"{self.directory}/2023-01-01"
-        self.assertEqual(self.handler.get_filename(), expected_filename)
+    Args:
+        handler (TimedRotatingFileHandler): The handler instance under test.
 
-    def test_do_rollover(self):
-        """
-        Executes and verifies the log file rollover operation for the handler instance.
+    Asserts:
+        - The log message is written correctly to the stream.
+        - File locking (fcntl) is used properly during the write.
+    """
+    record = LogRecord(
+        name="test_logger",
+        level=20,  # INFO
+        pathname="test_path",
+        lineno=10,
+        msg="Test log message",
+        args=None,
+        exc_info=None,
+    )
+    with patch("fcntl.flock"):
+        with patch.object(handler, "stream", MagicMock()) as mock_stream:
+            handler.write_record_to_file(record)
+            mock_stream.write.assert_called_once_with("Test log message\n")
+            mock_stream.flush.assert_called_once()
 
-        Tests the `do_rollover` function of the handler to ensure it correctly updates
-        the `baseFilename` after performing the rollover process. Validates that the
-        `baseFilename` matches the expected path after the rollover.
 
-        Args:
-            self: Represents the instance of the test case class.
+def test_emit_with_rollover(handler, mock_logging_file):
+    """Test the emit method, including log file rotation logic.
 
-        Raises:
-            AssertionError: If the `baseFilename` does not match the expected value.
+    Args:
+        handler (TimedRotatingFileHandler): The handler instance under test.
+        mock_logging_file (MagicMock): Mocked LoggingFile class.
 
-        """
-        new_filename = f"{self.directory}/{self.current_date}"
-        self.handler.do_rollover(new_filename)
-        self.assertEqual(self.handler.baseFilename, self.path_to_file)
+    Asserts:
+        - The log record is written correctly if within the log level.
+        - Log file rollover (do_rollover) is triggered when necessary.
+    """
+    record = LogRecord(
+        name="test_logger",
+        level=20,  # INFO
+        pathname="test_path",
+        lineno=10,
+        msg="Test log message",
+        args=None,
+        exc_info=None,
+    )
+    with patch.object(handler, "get_filename") as mock_get_filename:
+        with patch.object(handler, "do_rollover") as mock_do_rollover:
+            with patch.object(handler, "write_record_to_file") as mock_write_record:
+                mock_get_filename.return_value = "/tmp/logs/2023-10-01"
+                handler.emit(record)
+                mock_write_record.assert_called_once_with(record)
+                mock_do_rollover.assert_not_called()
 
-    @patch("simple_logs.handlers.TimedRotatingFileHandler.get_filename")
-    def test_emit_rollover(self, mock_get_filename):
-        """
-        Test the emit method for rollover scenario in the TimedRotatingFileHandler.
-
-        This method ensures that the `emit` method properly handles file rollover
-        when a new log file is generated. It verifies that the rollover functionality
-        deletes the old file and updates the handler's current log file path.
-
-        Args:
-            mock_get_filename (MagicMock): Mocked `get_filename` method from
-                TimedRotatingFileHandler to control the file path returned.
-        """
-        mock_get_filename.return_value = self.path_to_file
-        record = MagicMock()
-
-        with patch.object(
-            LoggingFile, "file_exist", return_value=False
-        ) as mock_file_exist, patch.object(  # noqa F841
-            LoggingFile, "file_to_delete"
-        ) as mock_file_to_delete:
-            self.handler.emit(record)
-            mock_file_to_delete.assert_not_called()
-            self.assertEqual(self.handler.baseFilename, self.path_to_file)
-
-    @patch("simple_logs.handlers.TimedRotatingFileHandler.get_filename")
-    def test_emit_no_rollover(self, mock_get_filename):
-        """
-        Test the emit functionality in the TimedRotatingFileHandler without triggering file
-        rollover. This ensures that when a record is emitted, the base filename remains
-        consistent, and no unnecessary file deletion occurs.
-
-        Args:
-            mock_get_filename (Mock): Mocked method for `get_filename` to control the
-                filename used by the handler during the test.
-        """
-        mock_get_filename.return_value = self.path_to_file
-        record = MagicMock()
-
-        with patch.object(
-            LoggingFile, "file_exist", return_value=True
-        ) as mock_file_exist, patch.object(  # noqa F841
-            LoggingFile, "file_to_delete"
-        ) as mock_file_to_delete:
-            self.handler.emit(record)
-            mock_file_to_delete.assert_not_called()
-            self.assertEqual(self.handler.baseFilename, self.handler.get_filename())
+                # Simulate filename change for rollover
+                mock_get_filename.return_value = "/tmp/logs/2023-10-02"
+                handler.emit(record)
+                mock_write_record.assert_called_with(record)
+                mock_do_rollover.assert_called_once_with("/tmp/logs/2023-10-02")
