@@ -5,8 +5,8 @@ from unittest.mock import patch
 
 import pytest  # type: ignore[import-not-found]
 
-from simple_logs.config import ConfigLogging
-from simple_logs.handlers import TimedRotatingFileHandler
+from cat_logger.config import ConfigLogging
+from cat_logger.handlers import TimedRotatingFileHandler
 from tests.enums import FileHandlerEnum
 
 
@@ -49,7 +49,7 @@ def temp_files(temp_dir):
 @pytest.fixture
 def mocked_datetime_now():
     """Mock the datetime.now method to return a fixed value."""
-    with patch("simple_logs.handlers.datetime") as mock_datetime:
+    with patch("cat_logger.handlers.datetime") as mock_datetime:
         mock_datetime.now.return_value = datetime(2023, 10, 1)
         mock_datetime.strftime = datetime.strftime
         yield mock_datetime
@@ -58,7 +58,7 @@ def mocked_datetime_now():
 @pytest.fixture
 def mock_logging_file():
     """Mock the LoggingFile class to emulate file handling behavior."""
-    with patch("simple_logs.handlers.LoggingFile") as mock_file:
+    with patch("cat_logger.handlers.LoggingFile") as mock_file:
         yield mock_file
 
 

@@ -1,7 +1,7 @@
-# simple_logs
+# cat_logger
 
-[![PyPI - Version](https://img.shields.io/pypi/v/simple_logs.svg)](https://pypi.org/project/simple_logs)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/simple_logs.svg)](https://pypi.org/project/simple_logs)
+[![PyPI - Version](https://img.shields.io/pypi/v/cat_logger.svg)](https://pypi.org/project/cat_logger)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/cat_logger.svg)](https://pypi.org/project/cat_logger)
 
 -----
 Python library to simplify working with the standard logging library.
@@ -23,15 +23,15 @@ The key features are:
 ## Installation
 
 ```console
-pip install simple_logs
+pip install cat_logger
 ```
 
 ## Example of use
 
-### [Using a library with a class](ready_made_solutions/simple_logs_class.py)
+### [Using a library with a class](ready_made_solutions/cat_logger_class.py)
 
-### [Using a library with a function](ready_made_solutions/simple_logs_func.py)
+### [Using a library with a function](ready_made_solutions/cat_logger_func.py)
 
 ## License
 
-`simple_logs` is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.
+`cat_logger` is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.

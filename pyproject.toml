@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "simple_logs"
+name = "cat_logger"
 dynamic = ["version"]
 description = 'Python library to simplify working with the standard logging library'
 readme = "README.md"
@@ -27,11 +27,11 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Documentation = "https://github.com/PyBackDev/simple_logs/blob/main/README.md"
-Source = "https://github.com/PyBackDev/simple_logs"
+Documentation = "https://github.com/PyBackDev/cat_logger/blob/main/README.md"
+Source = "https://github.com/PyBackDev/cat_logger"
 
 [tool.hatch.version]
-path = "simple_logs/__about__.py"
+path = "cat_logger/__about__.py"
 
 [tool.hatch.ruff]
 line-length = 79

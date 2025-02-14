@@ -102,7 +102,7 @@ def test_add_file_handler(config_logging):
     assert "file" in config_logging["handlers"]
     _handler = config_logging["handlers"]["file"]
     assert _handler["level"] == "INFO"
-    assert _handler["class"] == "simple_logs.handlers.TimedRotatingFileHandler"
+    assert _handler["class"] == "cat_logger.handlers.TimedRotatingFileHandler"
     assert _handler["formatter"] == "formatter"
     assert _handler["directory"] == directory
 

@@ -3,8 +3,8 @@ import logging
 import os
 from datetime import datetime
 
-from simple_logs.enums import LoggingLevel
-from simple_logs.files import LoggingFile
+from cat_logger.enums import LoggingLevel
+from cat_logger.files import LoggingFile
 
 
 class TimedRotatingFileHandler(logging.FileHandler):

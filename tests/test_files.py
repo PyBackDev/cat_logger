@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-from simple_logs.files import Directory, File, LoggingFile
+from cat_logger.files import Directory, File, LoggingFile
 
 
 # Tests for Directory class

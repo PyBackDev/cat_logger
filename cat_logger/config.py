@@ -172,7 +172,7 @@ class ConfigLogging(MutableMapping):
         self,
         directory: str,
         level: str = "INFO",
-        class_handler: str = "simple_logs.handlers.TimedRotatingFileHandler",
+        class_handler: str = "cat_logger.handlers.TimedRotatingFileHandler",
         formatter: str = "formatter",
     ):
         """
@@ -181,7 +181,7 @@ class ConfigLogging(MutableMapping):
         Args:
             directory (str): Directory for the log files.
             level (str): Logging level, default is "INFO".
-            class_handler (str): Handler class, default is "simple_logs.handlers.TimedRotatingFileHandler".
+            class_handler (str): Handler class, default is "cat_logger.handlers.TimedRotatingFileHandler".
             formatter (str): Formatter name, default is "formatter".
         """
         self["handlers"]["file"] = {
