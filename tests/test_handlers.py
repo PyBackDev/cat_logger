@@ -43,7 +43,7 @@ def test_file_rollover(handler, mock_logging_file):
     Asserts:
         - The baseFilename is updated to the new filename after rollover.
     """
-    new_filename = "/tmp/logs/2023-10-02"
+    new_filename = "2023-10-02"
     with open(os.path.join(handler._directory, new_filename), "w") as f:
         f.write("Sample content")
     handler.do_rollover(new_filename)
