@@ -7,6 +7,7 @@ import pytest  # type: ignore[import-not-found]
 
 from simple_logs.config import ConfigLogging
 from simple_logs.handlers import TimedRotatingFileHandler
+from tests.enums import FileHandlerEnum
 
 
 @pytest.fixture
@@ -65,6 +66,9 @@ def mock_logging_file():
 def handler(temp_dir, mock_logging_file, mocked_datetime_now):
     """Create a test instance of TimedRotatingFileHandler with mocked dependencies."""
     handler = TimedRotatingFileHandler(
-        directory=temp_dir, suffix="%Y-%m-%d", backup_count=3, level="DEBUG"
+        directory=temp_dir,
+        suffix=FileHandlerEnum.SUFFIX.value,
+        backup_count=FileHandlerEnum.BACKUP_COUNT.value,
+        level=FileHandlerEnum.LEVEL.value,
     )
     return handler

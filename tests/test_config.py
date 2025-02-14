@@ -88,11 +88,11 @@ def test_add_console_handler(config_logging):
     """Test adding a console logging handler to the configuration."""
     config_logging.add_console_handler()
     assert "console" in config_logging["handlers"]
-    handler = config_logging["handlers"]["console"]
-    assert handler["level"] == "INFO"
-    assert handler["class"] == "logging.StreamHandler"
-    assert handler["formatter"] == "formatter"
-    assert handler["stream"] == "ext://sys.stdout"
+    _handler = config_logging["handlers"]["console"]
+    assert _handler["level"] == "INFO"
+    assert _handler["class"] == "logging.StreamHandler"
+    assert _handler["formatter"] == "formatter"
+    assert _handler["stream"] == "ext://sys.stdout"
 
 
 def test_add_file_handler(config_logging):
@@ -100,11 +100,11 @@ def test_add_file_handler(config_logging):
     directory = "/logs/"
     config_logging.add_file_handler(directory)
     assert "file" in config_logging["handlers"]
-    handler = config_logging["handlers"]["file"]
-    assert handler["level"] == "INFO"
-    assert handler["class"] == "simple_logs.handlers.TimedRotatingFileHandler"
-    assert handler["formatter"] == "formatter"
-    assert handler["directory"] == directory
+    _handler = config_logging["handlers"]["file"]
+    assert _handler["level"] == "INFO"
+    assert _handler["class"] == "simple_logs.handlers.TimedRotatingFileHandler"
+    assert _handler["formatter"] == "formatter"
+    assert _handler["directory"] == directory
 
 
 def test_add_logger(config_logging):
