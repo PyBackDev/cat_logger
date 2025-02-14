@@ -1,40 +1,7 @@
 import os
-import tempfile
 from datetime import datetime
 
-import pytest  # type: ignore[import-not-found]
-
 from simple_logs.files import Directory, File, LoggingFile
-
-
-@pytest.fixture
-def temp_dir():
-    """Creates a temporary directory for testing and ensures cleanup after the test."""
-    dir_path = tempfile.mkdtemp()
-    yield dir_path
-    for root, dirs, files in os.walk(dir_path, topdown=False):
-        for file in files:
-            os.remove(os.path.join(root, file))
-        for directory in dirs:
-            os.rmdir(os.path.join(root, directory))
-    os.rmdir(dir_path)
-
-
-@pytest.fixture
-def temp_files(temp_dir):
-    """Creates temporary files in the provided directory for testing.
-
-    Args:
-        temp_dir (str): Path to the temporary directory.
-
-    Returns:
-        list[str]: A list of created temporary file names.
-    """
-    filenames = ["file1.txt", "file2.txt", "invalid_name"]
-    for name in filenames:
-        with open(os.path.join(temp_dir, name), "w") as f:
-            f.write("Sample content")
-    return filenames
 
 
 # Tests for Directory class

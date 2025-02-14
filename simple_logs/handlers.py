@@ -2,7 +2,6 @@ import fcntl
 import logging
 import os
 from datetime import datetime
-from logging import LogRecord
 
 from simple_logs.enums import LoggingLevel
 from simple_logs.files import LoggingFile
@@ -114,7 +113,7 @@ class TimedRotatingFileHandler(logging.FileHandler):
             return LoggingLevel[level].value
         return logging.INFO
 
-    def write_record_to_file(self, record: LogRecord):
+    def write_record_to_file(self, record: logging.LogRecord):
         """
         Writes a formatted log record to the current log file, ensuring proper file locking.
 
@@ -130,7 +129,7 @@ class TimedRotatingFileHandler(logging.FileHandler):
             fcntl.flock(stream, fcntl.LOCK_UN)
         self.flush()
 
-    def emit(self, record: LogRecord):
+    def emit(self, record: logging.LogRecord):
         """
         Emit a log record and handle log file rotation if necessary.
 

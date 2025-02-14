@@ -1,14 +1,3 @@
-import pytest  # type: ignore[import-not-found]
-
-from simple_logs.config import ConfigLogging
-
-
-@pytest.fixture
-def config_logging():
-    # Initializes an instance of ConfigLogging for use in multiple tests
-    return ConfigLogging()
-
-
 def test_initial_configuration(config_logging):
     """Test the default configuration of ConfigLogging."""
     assert config_logging["version"] == 1
