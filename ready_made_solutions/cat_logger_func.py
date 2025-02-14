@@ -26,4 +26,5 @@ def dog(name_logger: str = "dog", directory: str = LOG_DIR):
     logger.info("Who do you like more, a cat or a dog?")  # type: ignore[union-attr]
 
 
-dog()
+if __name__ == "__main__":
+    dog()

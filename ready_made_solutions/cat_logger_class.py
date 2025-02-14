@@ -29,4 +29,5 @@ def cat(name_logger: str = "cat", directory: str = LOG_DIR):
     logger.info("Who do you like more, a cat or a dog?")
 
 
-cat()
+if __name__ == "__main__":
+    cat()

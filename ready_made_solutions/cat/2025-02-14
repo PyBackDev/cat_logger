@@ -1,3 +1,3 @@
-[cat INFO 2025-02-14 19:40:03 simple_logs_class.py: 27 - cat()] I love cats!
-[cat INFO 2025-02-14 19:40:03 simple_logs_class.py: 28 - cat()] My cat's name is Mia!
-[cat INFO 2025-02-14 19:40:03 simple_logs_class.py: 29 - cat()] Who do you like more, a cat or a dog?
+[cat INFO 2025-02-14 19:59:10 cat_logger_class.py: 27 - cat()] I love cats!
+[cat INFO 2025-02-14 19:59:10 cat_logger_class.py: 28 - cat()] My cat's name is Mia!
+[cat INFO 2025-02-14 19:59:10 cat_logger_class.py: 29 - cat()] Who do you like more, a cat or a dog?
