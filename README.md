@@ -28,9 +28,9 @@ pip install cat_logger
 
 ## Example of use
 
-### [Using a library with a class](ready_made_solutions/cat_logger_class.py)
+### [Using a library with a class](https://github.com/PyBackDev/cat_logger/blob/main/ready_made_solutions/cat_logger_class.py)
 
-### [Using a library with a function](ready_made_solutions/cat_logger_func.py)
+### [Using a library with a function](https://github.com/PyBackDev/cat_logger/blob/main/ready_made_solutions/cat_logger_func.py)
 
 ## License
 
